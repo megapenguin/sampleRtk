@@ -1,0 +1,20 @@
+html,
+body,
+#root,
+.App {
+  height: 100%;
+  width: 100%;
+}
+
+.loginCardStyle {
+  border-radius: "16px"; 
+  border-radius: 20px;
+  box-shadow: rgba(0,0,0,0.1) 0 0 6px;
+  text-align: center;
+  
+}
+div.icons-list {
+  text-align: center;
+  font-size: 40px;
+}
+
