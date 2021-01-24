@@ -4,7 +4,7 @@ const randomString = require("randomstring");
 const path = require("path");
 const fs = require("fs");
 
-router.get("/", (req, res) => {
+router.get("/search_all_images", (req, res) => {
   Image.findAll()
     .then((response) => {
       console.log(response);

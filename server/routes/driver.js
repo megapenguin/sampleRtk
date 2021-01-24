@@ -1,19 +1,48 @@
-const router = require("express").Router()
-const Sequelize = require("sequelize")
-const Op = Sequelize.Op
-const Driver = require("../models/Driver")
+const router = require("express").Router();
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+const someOtherPlaintextPassword = "not_bacon";
+const Driver = require("../models/Driver");
+const Jeepney = require("../models/Jeepney");
+const JeepneyDriver = require("../models/JeepneyDriver");
+const Image = require("../models/Image");
 
 router.get("/", (req, res) => {
-  //SELECT * FROM users
-  Driver.findAll()
+  Driver.hasMany(JeepneyDriver, { foreignKey: "driverId" });
+  JeepneyDriver.belongsTo(Driver, { foreignKey: "driverId" });
+  Jeepney.hasMany(JeepneyDriver, { foreignKey: "jeepneyId" });
+  JeepneyDriver.belongsTo(Jeepney, { foreignKey: "jeepneyId" });
+
+  Driver.findAll({
+    attributes: {
+      exclude: ["generatePassword"],
+    },
+    include: [
+      {
+        model: JeepneyDriver,
+        include: [{ model: Jeepney }],
+      },
+    ],
+  })
     .then((response) => {
-      res.json(response)
+      res.json(response);
     })
-    .catch((error) => console.log(error))
-})
+    .catch((error) => console.log(error));
+});
+
+router.get("/search_all_drivers", (req, res) => {
+  //SELECT * FROM users
+  Driver.findAll({ exclude: ["generatePassword"] })
+    .then((response) => {
+      res.json(response);
+    })
+    .catch((error) => console.log(error));
+});
 
 router.post("/search_drivers", (req, res) => {
-  let { value } = req.body
+  let { value } = req.body;
 
   Driver.findAll({
     where: {
@@ -57,14 +86,14 @@ router.post("/search_drivers", (req, res) => {
     },
   })
     .then((_res) => {
-      res.json(_res)
+      res.json(_res);
     })
-    .catch((error) => console.log(error))
-})
+    .catch((error) => console.log(error));
+});
 
 //localhost:8080/users/add
 router.post("/add_driver", (req, res) => {
-  console.log("add to db")
+  console.log("add to db");
   let {
     firstName,
     middleName,
@@ -73,31 +102,39 @@ router.post("/add_driver", (req, res) => {
     contactNumber,
     generatePassword,
     email,
-  } = req.body
+  } = req.body;
 
-  Driver.create({
-    firstName,
-    middleName,
-    lastName,
-    address,
-    contactNumber,
-    generatePassword,
-    email,
-  })
-    .then((response) => {
-      res.json(response)
-    })
-    .catch((error) => console.log(error))
-})
+  bcrypt.genSalt(10, function (err, salt) {
+    bcrypt.hash(generatePassword, salt, function (err, hash) {
+      // Store hash in your password DB.
+      if (err) return res.sendStatus(500);
+
+      Driver.create({
+        firstName,
+        middleName,
+        lastName,
+        address,
+        contactNumber,
+        generatePassword: hash,
+        email,
+      })
+        .then((_res) => {
+          res.json(_res);
+          //console.log(_res)
+        })
+        .catch((error) => console.log(error));
+    });
+  });
+});
 
 router.delete("/delete_driver", (req, res) => {
-  let { id } = req.query
+  let { id } = req.query;
 
   Driver.destroy({ where: { id } })
     .then((response) => {
-      res.json({ success: true, msg: "Succefully deleted user" })
+      res.json({ success: true, msg: "Succefully deleted user" });
     })
-    .catch((error) => console.log(error))
-})
+    .catch((error) => console.log(error));
+});
 
-module.exports = router
+module.exports = router;

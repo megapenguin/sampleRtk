@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../database/database");
 
-const Jeepney = db.define("jeepneys", {
+const JeepneyDriver = db.define("jeepneydrivers", {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
@@ -9,17 +9,12 @@ const Jeepney = db.define("jeepneys", {
     allowNull: false,
   },
 
-  barangayId: {
+  driverId: {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
 
-  plateNumber: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-
-  jeepCapacity: {
+  jeepneyId: {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
@@ -34,4 +29,4 @@ const Jeepney = db.define("jeepneys", {
   },
 });
 
-module.exports = Jeepney;
+module.exports = JeepneyDriver;

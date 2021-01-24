@@ -25,7 +25,7 @@ router.post("/auth_login", (req, res) => {
 
       if (status === false) return res.sendStatus(422)
       //dahil kailangan mo ng id sa code mo ipasa narin natin ang id
-      if (user.id === 2 && user.userName == "ADMIN") {
+      if (user.id === 4 && user.userName == "ADMIN") {
         myStatus = "admin"
       } else {
         myStatus = "not_admin"
